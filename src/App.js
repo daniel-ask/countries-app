@@ -1,25 +1,38 @@
-import logo from './logo.svg';
+import React from "react";
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+export default class App extends React.Component {
+	constructor(props){
+		super(props)
+		this.state = {data: []};
+	}
 
-export default App;
+	clickButton(){
+	}
+
+	async componentDidMount(){
+		const res = await fetch('https://restcountries.eu/rest/v2/all');
+		const data = await res.json();
+		this.setState({ data: data });
+	}
+
+  render() {
+		const {data} = this.state;
+		console.log(this.state)
+    return (
+      <div className='app'>
+        <h1>Country App</h1>
+        <input type="text" className='input' style={{color: 'red'}}/>
+				<button onClick={() => this.clickButton()}
+				>Click Me</button>
+				<ol>
+					{data.map((country) => {
+						return (
+							<li key={country.name} >{country.name}</li>
+						)
+					})}
+				</ol>
+      </div>
+    );
+  }
+}
