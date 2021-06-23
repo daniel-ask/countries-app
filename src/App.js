@@ -1,4 +1,5 @@
 import React from "react";
+import Country from './Country';
 import './App.css';
 
 export default class App extends React.Component {
@@ -7,31 +8,36 @@ export default class App extends React.Component {
 		this.state = {data: []};
 	}
 
-	clickButton(){
+	async fetchCountries(e){
+		try{
+		const url = e ? `https://restcountries.eu/rest/v2/name/${e.target.value}`	: 'https://restcountries.eu/rest/v2/all';
+		const res = await fetch(url)
+		if(res.status >= 400){
+			throw new Error('Something went wrong')
+		}
+		const data = await res.json();
+		this.setState({ data: data })
+		}catch(err){
+			console.log(err)
+		}
 	}
 
-	async componentDidMount(){
-		const res = await fetch('https://restcountries.eu/rest/v2/all');
-		const data = await res.json();
-		this.setState({ data: data });
+	 componentDidMount(){
+		 this.fetchCountries();
 	}
 
   render() {
-		const {data} = this.state;
+		const { data } = this.state;
 		console.log(this.state)
     return (
       <div className='app'>
         <h1>Country App</h1>
-        <input type="text" className='input' style={{color: 'red'}}/>
-				<button onClick={() => this.clickButton()}
-				>Click Me</button>
-				<ol>
+        <input type="text" className='input' onChange={(event) => this.fetchCountries(event) }/>
+				<section className='country-list'>
 					{data.map((country) => {
-						return (
-							<li key={country.name} >{country.name}</li>
-						)
+						return <Country key={country.name} countryData={country}/>
 					})}
-				</ol>
+				</section>
       </div>
     );
   }
